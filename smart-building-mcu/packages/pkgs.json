@@ -20,6 +20,11 @@
   "name": "DHT11"
  }, 
  {
+  "path": "/packages/peripherals/ld3320", 
+  "ver": "latest", 
+  "name": "LD3320"
+ }, 
+ {
   "path": "/packages/peripherals/ssd1306", 
   "ver": "latest", 
   "name": "SSD1306"
