@@ -1,5 +1,6 @@
 #include <my_hwtimer.h>
 
+
 int my_hwtimer_max_time=5000, my_hwtimer_min_time=125, my_hwtimer_temp_time;  //以ms为单位，用于记录最大超时时间和最小超时时间，以及临时变量
 
 rt_err_t ret = RT_EOK;
@@ -21,7 +22,7 @@ int my_hwtimer_openTimer(void)
     hw_dev = rt_device_find(HWTIMER_DEV_NAME);
     if (hw_dev == RT_NULL)
     {
-        rt_kprintf("hwtimer sample run failed! can't find %s device!\n", HWTIMER_DEV_NAME);
+        rt_kprintf("hwtimer open run failed! can't find %s device!\n", HWTIMER_DEV_NAME);
         return RT_ERROR;
     }
 
@@ -63,7 +64,7 @@ int my_hwtimer_closeTimer(void)
     /* 确保定时器存在 */
     if (hw_dev == RT_NULL)
     {
-        rt_kprintf("hwtimer sample run failed! can't find %s device!\n", HWTIMER_DEV_NAME);
+        rt_kprintf("hwtimer close run failed! can't find %s device!\n", HWTIMER_DEV_NAME);
         return RT_ERROR;
     }
 
@@ -144,5 +145,5 @@ int my_hwtimer_subTime(int ms)
 }
 
  /* 导出到 msh 命令列表中 */
-MSH_CMD_EXPORT(my_hwtimer_openTimer, my hwtimer openTimer);
+//MSH_CMD_EXPORT(my_hwtimer_openTimer, my hwtimer openTimer);
 

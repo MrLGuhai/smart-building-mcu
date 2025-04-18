@@ -75,6 +75,7 @@ void my_pwm_angle_change(bool direction, uint8_t angles)
         }
     }
     Set_Devpro_DoorState(direction);
+    rt_kprintf("angle is %d\n",angle);
     my_pwm_set_angle(angle);
 }
 

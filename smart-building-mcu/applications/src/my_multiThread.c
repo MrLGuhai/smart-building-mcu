@@ -5,29 +5,32 @@
 #include <my_adc.h>
 #include <my_hwtimer.h>
 
-void beep_open(void)
-{
-    my_hwtimer_openTimer();             //红灯闪烁、蜂鸣器响
-    Set_Devpro_BeepState(true);
-//    set_beep_state(1);
-}
 
-void beep_close(void)
-{
-    my_hwtimer_closeTimer();
-    rt_pin_write(LED0_PIN, PIN_HIGH);   //红灯灭，因为定时器关闭时红灯可能是亮着的，所以再手动关闭一次
-    rt_pin_write(BEEP_PIN, PIN_LOW);    //关闭蜂鸣器，因为定时器关闭时蜂鸣器可能是开启的，所以再手动关闭一次
-    Set_Devpro_BeepState(false);
-//    set_beep_state(0);
-}
+//void beep_open(void)
+//{
+//    my_hwtimer_openTimer();             //红灯闪烁、蜂鸣器响
+//    Set_Devpro_BeepState(true);
+////    set_beep_state(1);
+//}
+//
+//void beep_close(void)
+//{
+//    my_hwtimer_closeTimer();
+//    rt_pin_write(LED0_PIN, PIN_HIGH);   //红灯灭，因为定时器关闭时红灯可能是亮着的，所以再手动关闭一次
+//    rt_pin_write(BEEP_PIN, PIN_LOW);    //关闭蜂鸣器，因为定时器关闭时蜂鸣器可能是开启的，所以再手动关闭一次
+//    Set_Devpro_BeepState(false);
+////    set_beep_state(0);
+//}
 
 void beep_change(bool state)
 {
     if(!state){      // 关闭蜂鸣器
+        rt_kprintf("Ready to CLOSE Timer\n");
         my_hwtimer_closeTimer();
         rt_pin_write(LED0_PIN, PIN_HIGH);   //红灯灭，因为定时器关闭时红灯可能是亮着的，所以再手动关闭一次
         rt_pin_write(BEEP_PIN, PIN_LOW);    //关闭蜂鸣器，因为定时器关闭时蜂鸣器可能是开启的，所以再手动关闭一次
     }else if(state){ // 开启蜂鸣器
+        rt_kprintf("Ready to OPEN Timer\n");
         my_hwtimer_openTimer();             //红灯闪烁、蜂鸣器响
     }
     Set_Devpro_LED0State(state);
@@ -71,14 +74,14 @@ void IQR_HANDALE_KEY0(void *args)   //关闭蜂鸣器
 {
     //rt_kprintf("KEY0 Down! Change BEEP!\n");
 //    change_dht11_hard_error_state();    //KEY0按下，翻转DHT11故障标识
-    Set_Devpro_DHT11_Error_State(!Get_Devpro_DHT11_Error_State());    //KEY0按下，翻转DHT11故障标识
+    Set_Devpro_DHT11_Sensor_State(!Get_Devpro_DHT11_Sensor_State());    //KEY0按下，翻转DHT11故障标识
 }
 /* 自己定义KEY1的回调函数，相当于中断服务函数 */
 void IQR_HANDALE_KEY1(void *args)
 {
     //rt_kprintf("KEY1 Down! Change Emergency light!\n");
 //    change_light_hard_error_state();    //KEY1按下，翻转应急灯故障标识
-    Set_Devpro_Light_Error_State(!Get_Devpro_Light_Error_State());    //KEY1按下，翻转应急灯故障标识
+    Set_Devpro_Light_Sensor_State(!Get_Devpro_Light_Sensor_State());    //KEY1按下，翻转应急灯故障标识
 }
 
 void my_GPIO_Init(void)

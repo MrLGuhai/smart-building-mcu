@@ -23,6 +23,7 @@
 #include <my_data_upload.h>
 #include <my_auto_control.h>
 #include <my_pwm_ctrl_door.h>
+#include <my_ld3320.h>
 
 
 #define LED0_PIN    GET_PIN(F, 9)
@@ -36,17 +37,19 @@ int main(void)
     my_dht11_read_temp_sample();    // 开启采集温湿度数据线程
     my_pwm_init();      // 初始化PWM模块
 
-    // 连接OneNET云平台
-//    onenet_mqtt_init();
     // 连接本地搭建的MQTT Broker代理
     mqtt_start();
 
+
     rt_thread_mdelay(4000);
-    // 数据上传OneNET云平台线程初始化
+    // 数据上传服务器线程初始化
     my_data_upload_init();
 
     // 自动监控线程初始化
     my_auto_control_init();
+
+    // 开启LD3320语音识别模块
+//    create_ld3320_asr_thread();
 
     while(1){
 //        rt_pin_write(LED0_PIN, 1-rt_pin_read(LED0_PIN));//翻转LED0

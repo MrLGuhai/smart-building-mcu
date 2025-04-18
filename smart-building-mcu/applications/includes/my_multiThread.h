@@ -25,8 +25,8 @@
 
 //static uint8_t KEY0_State=0;      //记录KEY0按键的状态
 
-void beep_open(void);
-void beep_close(void);
+//void beep_open(void);
+//void beep_close(void);
 void beep_change(bool state);
 void relay_change(bool state);
 void emergency_light_open(void);

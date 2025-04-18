@@ -74,10 +74,10 @@ void my_read_temp_entry(void *parameter)
                 //将温湿度数据写入Flash中并显示到OLED上
                 show_Data();
 
-                const char str_data[25];
-                sprintf(str_data,"temp:%dC humi:%d",temp,humi);
-                sprintf(str_data,"%s%s",str_data,"%\n");
-                mqtt_publish(MQTT_PUBTOPIC, str_data);
+//                const char str_data[25];
+//                sprintf(str_data,"temp:%dC humi:%d",temp,humi);
+//                sprintf(str_data,"%s%s",str_data,"%\n");
+//                mqtt_publish(MQTT_PUBTOPIC, str_data);
 
                 // 将温湿度数据写入设备属性结构体中
                 Set_Devpro_temp(temp);
