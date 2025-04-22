@@ -552,6 +552,7 @@ rt_err_t Publish_Device_Status(const Devices_t *dev_data)
         LOG_E("device status publish failed (%d)!", result);
         goto __exit;
     }
+    rt_kprintf("device status publish success!\n");
 __exit:
     if (send_buffer)
     {
@@ -873,6 +874,97 @@ static void mqtt_thresholds_callback(MQTTClient *c, MessageData *msg_data)
         cJSON_Delete(root);
     }
 }
+
+// 设备上报属性JSON格式
+//{
+//    "alarmType": 1,           // 告警类型：1-温度过高，2-温度回归正常，3-湿度过高，4-湿度回归正常，5-光照过强，6-光照过弱
+//    "actualValue": 35,        // 实际值
+//    "thresholdValue": 30,     // 阈值
+//    "timestamp": "2024-03-20T10:30:00"  // 告警时间
+//}
+static rt_err_t mqtt_get_alarm_info(uint8_t alarm_type , int environment_data , int thresholds_data, char **out_buff)
+{
+    rt_err_t result = RT_EOK;
+    cJSON *root = RT_NULL;
+    char *msg_str = RT_NULL;
+    time_t now;
+    struct tm *timeinfo;
+    char *timestamp = RT_NULL;
+
+    RT_ASSERT(out_buff);
+
+    // 构建当前的时间戳
+    now = time(RT_NULL);
+    timeinfo = localtime(&now);
+    strftime(timestamp, strlen(timestamp), "%Y-%m-%dT%H:%M:%S", timeinfo);
+
+    root = cJSON_CreateObject();
+
+    if (!root)
+    {
+        LOG_E("MQTT publish alarm info failed! cJSON create object error return NULL!");
+        return -RT_ENOMEM;
+    }
+
+    cJSON_AddNumberToObject(root, "alarmType", alarm_type);
+    cJSON_AddNumberToObject(root, "actualValue", environment_data);
+    cJSON_AddNumberToObject(root, "thresholdValue", thresholds_data);
+    cJSON_AddStringToObject(root, "timestamp", timestamp);
+
+    /* render a cJSON structure to buffer */
+    msg_str = cJSON_PrintUnformatted(root);
+    if (!msg_str)
+    {
+        LOG_E("MQTT publish alarm info failed! cJSON print unformatted error return NULL!");
+        result = -RT_ENOMEM;
+        goto __exit;
+    }
+    *out_buff = rt_malloc(strlen(msg_str));
+    if (!(*out_buff))
+    {
+        LOG_E("mqtt upload alarm info failed! No memory for send buffer!");
+        return -RT_ENOMEM;
+    }
+    strncpy(&(*out_buff)[0], msg_str, strlen(msg_str));
+__exit:
+    if (root)
+    {
+        cJSON_Delete(root);
+    }
+    if (msg_str)
+    {
+        cJSON_free(msg_str);
+    }
+
+    return result;
+}
+
+
+rt_err_t Publish_Alarm_Info( uint8_t alarm_type , int environment_data , int thresholds_data)
+{
+    char *send_buffer = RT_NULL;
+    rt_err_t result = RT_EOK;
+
+    result = mqtt_get_alarm_info(alarm_type , environment_data, thresholds_data , &send_buffer);
+    if (result < 0)
+    {
+        goto __exit;
+    }
+    result = mqtt_publish(MQTT_ALARM_PUBTOPIC, send_buffer);
+    if (result < 0)
+    {
+        LOG_E("alarm info publish failed (%d)!", result);
+        goto __exit;
+    }
+__exit:
+    if (send_buffer)
+    {
+        rt_free(send_buffer);
+    }
+
+    return result;
+}
+
 
 // 订阅相关的主题并绑定回调函数
 void mqtt_sub_init(void)

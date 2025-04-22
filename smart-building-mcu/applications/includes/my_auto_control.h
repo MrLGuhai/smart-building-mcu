@@ -16,6 +16,15 @@
 #include <rtthread.h>
 #include <rtdbg.h>
 
+typedef enum {
+    ALARM_TEMPERATURE_TOO_HIGH = 1,
+    ALARM_TEMPERATURE_BACK_NORMAL = 2,
+    ALARM_HUMIDITY_TOO_HIGH = 3,
+    ALARM_HUMIDITY_BACK_NORMAL = 4,
+    ALARM_LIGHT_TOO_STRONG = 5,
+    ALARM_LIGHT_TOO_WEAK = 6
+} AlarmType;
+
 void my_auto_control_entry(void *parameter);
 
 int my_auto_control_init(void);

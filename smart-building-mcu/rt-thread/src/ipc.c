@@ -340,6 +340,7 @@ rt_err_t rt_sem_take(rt_sem_t sem, rt_int32_t time)
 
     /* disable interrupt */
     temp = rt_hw_interrupt_disable();
+//    rt_kprintf("thread %s take sem:%s, which value is: %d\n",rt_thread_self()->name,((struct rt_object *)sem)->name,sem->value);
 
     RT_DEBUG_LOG(RT_DEBUG_IPC, ("thread %s take sem:%s, which value is: %d\n",
                                 rt_thread_self()->name,

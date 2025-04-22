@@ -40,7 +40,7 @@ void my_data_upload_entry(void *parameter)
         if(result < 0){
             LOG_E("device properties datas upload failed (%d)!", result);
         }
-        rt_thread_delay(1000);
+        rt_thread_delay(2000);
     }
 }
 
@@ -207,3 +207,13 @@ void Set_Devpro_Light_Down_Limit(int Light_Down_Limit)
 {
     my_thresholds.Light_Down_Limit = Light_Down_Limit;
 }
+
+void show_data_upload_dev_data(void)
+{
+    rt_kprintf("data upload dht11 sensor state is %d\n",my_devices.DHT11_Sensor_State);
+    rt_kprintf("data upload light sensor state is %d\n",my_devices.Light_Sensor_State);
+    rt_kprintf("data upload temp limit is %d    humi limit is %d\n",my_thresholds.Temp_Limit,my_thresholds.Humi_Limit);
+    rt_kprintf("data upload light up limit is %d   down limit is %d\n",my_thresholds.Light_Up_Limit,my_thresholds.Light_Down_Limit);
+
+}
+MSH_CMD_EXPORT(show_data_upload_dev_data,show dev data);

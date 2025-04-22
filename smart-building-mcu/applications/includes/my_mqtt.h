@@ -57,6 +57,8 @@
 #define MQTT_THRESHOLD_SUBTOPIC           "threshold/set" // 接收用户设置的环境阈值
 #define MQTT_THRESHOLD_PUBTOPIC           "threshold/set/response"  // 用于响应用户的阈值设置是否成功
 
+#define MQTT_ALARM_PUBTOPIC            "alarm/record"   // 用于在自动控制外设时向服务器发布告警信息
+
 #define MQTT_WILLMSG            "Goodbye!"
 
 static void mqtt_sub_callback(MQTTClient *c, MessageData *msg_data);
@@ -87,6 +89,8 @@ rt_err_t Publish_Sync_Request(void);
 rt_err_t Publish_Environment_Data(const Environment_t *envi_data);
 
 rt_err_t Publish_Device_Status(const Devices_t *dev_data);
+
+rt_err_t Publish_Alarm_Info( uint8_t alarm_type , int environment_data , int thresholds_data);
 
 void mqtt_sub_init(void);
 

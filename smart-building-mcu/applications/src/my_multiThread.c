@@ -25,12 +25,12 @@
 void beep_change(bool state)
 {
     if(!state){      // 关闭蜂鸣器
-        rt_kprintf("Ready to CLOSE Timer\n");
+//        rt_kprintf("Ready to CLOSE Timer\n");
         my_hwtimer_closeTimer();
         rt_pin_write(LED0_PIN, PIN_HIGH);   //红灯灭，因为定时器关闭时红灯可能是亮着的，所以再手动关闭一次
         rt_pin_write(BEEP_PIN, PIN_LOW);    //关闭蜂鸣器，因为定时器关闭时蜂鸣器可能是开启的，所以再手动关闭一次
     }else if(state){ // 开启蜂鸣器
-        rt_kprintf("Ready to OPEN Timer\n");
+//        rt_kprintf("Ready to OPEN Timer\n");
         my_hwtimer_openTimer();             //红灯闪烁、蜂鸣器响
     }
     Set_Devpro_LED0State(state);
