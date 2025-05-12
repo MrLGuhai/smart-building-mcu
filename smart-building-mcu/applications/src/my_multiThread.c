@@ -84,6 +84,11 @@ void IQR_HANDALE_KEY1(void *args)
     Set_Devpro_Light_Sensor_State(!Get_Devpro_Light_Sensor_State());    //KEY1按下，翻转应急灯故障标识
 }
 
+uint8_t Get_MQ2_D0(void)
+{
+    return rt_pin_read(MQ2_D0_PIN);
+}
+
 void my_GPIO_Init(void)
 {
     /* 把LED引脚设置为输出 */
@@ -115,6 +120,9 @@ void my_GPIO_Init(void)
     rt_pin_mode(Relay_PIN, PIN_MODE_OUTPUT);
     /* 先关闭继电器 */
     rt_pin_write(Relay_PIN, PIN_LOW);
+
+    /* 把MQ2的D0引脚设置为输入 */
+    rt_pin_mode(MQ2_D0_PIN, PIN_MODE_INPUT);
 
 }
 

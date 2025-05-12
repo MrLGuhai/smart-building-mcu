@@ -15,7 +15,7 @@
 
 //Dev_properties_t my_dev_properties = {false,false,false,false,false,false,false,0,50,0,60,0,1000,500};
 Devices_t my_devices = {false,false,false,false,false,true,true};
-Environment_t my_environment = {0,0,0};
+Environment_t my_environment = {0,0,0,0};
 Thresholds_t my_thresholds = {50,60,2000,1250};
 
 void my_data_upload_entry(void *parameter)
@@ -206,6 +206,15 @@ int  Get_Devpro_Light_Down_Limit(void)
 void Set_Devpro_Light_Down_Limit(int Light_Down_Limit)
 {
     my_thresholds.Light_Down_Limit = Light_Down_Limit;
+}
+
+int  Get_Devpro_smoke(void)
+{
+    return my_environment.smoke;
+}
+void Set_Devpro_smoke(int smoke)
+{
+    my_environment.smoke = smoke;
 }
 
 void show_data_upload_dev_data(void)

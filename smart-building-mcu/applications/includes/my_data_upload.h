@@ -47,6 +47,7 @@ typedef struct Environment{
     int temp;               // 温度
     int humi;               // 湿度
     int light;              // 光照强度
+    int smoke;                // 烟雾浓度
 }Environment_t;
 
 typedef struct Thresholds{
@@ -105,5 +106,8 @@ void Set_Devpro_Light_Up_Limit(int Light_Up_Limit);
 
 int  Get_Devpro_Light_Down_Limit(void);
 void Set_Devpro_Light_Down_Limit(int Light_Down_Limit);
+
+int  Get_Devpro_smoke(void);
+void Set_Devpro_smoke(int smoke);
 
 #endif /* APPLICATIONS_INCLUDES_MY_DATA_UPLOAD_H_ */

@@ -373,6 +373,7 @@ static void mqtt_sync_callback(MQTTClient *c, MessageData *msg_data)
 //    "temperature": 25,    // 温度值，单位：℃
 //    "humidity": 60,       // 湿度值，单位：%
 //    "light": 800,           // 光照值，单位：lux
+//    "smoke": 200,           // 烟雾浓度，单位：ppm
 //    "timestamp": "2024-03-20T10:30:00"  // 数据采集时间
 //}
 /*
@@ -407,6 +408,7 @@ static rt_err_t mqtt_get_environment_datas(const Environment_t *envi_data, char 
     cJSON_AddNumberToObject(root, "temperature", envi_data->temp);
     cJSON_AddNumberToObject(root, "humidity", envi_data->humi);
     cJSON_AddNumberToObject(root, "light", envi_data->light);
+    cJSON_AddNumberToObject(root, "smoke", envi_data->smoke);
     cJSON_AddStringToObject(root, "timestamp", timestamp);
 
     /* render a cJSON structure to buffer */

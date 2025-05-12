@@ -33,6 +33,7 @@ int main(void)
     my_GPIO_Init();     //初始化GPIO引脚
     my_oled_init();     //初始化OLED
     my_light_adc();     //开启光敏传感器ADC线程采集数据
+    my_mq2_adc();       //开启MQ2的ADC线程采集数据
     my_rt_hw_dht11_port();          // 初始化DHT11模块
     my_dht11_read_temp_sample();    // 开启采集温湿度数据线程
     my_pwm_init();      // 初始化PWM模块

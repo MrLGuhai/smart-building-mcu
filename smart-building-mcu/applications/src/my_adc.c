@@ -8,9 +8,12 @@
 static rt_uint8_t thread1_stack[2048];             //线程栈1
 static struct rt_thread static_thread1;           //线程控制块1
 
-rt_adc_device_t adc_dev;    //ADC设备
-rt_uint32_t value, vol;     //数据值、电压值
+rt_adc_device_t adc_light_dev;    //光敏的ADC设备
+rt_adc_device_t adc_mq2_dev;    //MQ2的ADC设备
+rt_uint32_t light_value, light_vol;     //光敏的数据值、电压值
+rt_uint32_t mq2_value;     //MQ2的数据值
 rt_uint32_t light_limit=2500;   //光敏阈值(越暗值越大)
+bool mq2_state=false;   //MQ2的D0引脚(0表示未超出阈值，1表示超出阈值)
 uint8_t emergency_light_state=0;  //记录应急灯的状态，初始关闭则为0
 uint8_t light_hard_error_state=0;   //光敏传感器硬件故障标识
 
@@ -37,17 +40,17 @@ void set_light_limit(rt_uint32_t limit)
 
 int my_light_ADC_Init(void)
 {
-    adc_dev = (rt_adc_device_t)rt_device_find(ADC_DEV_NAME);  /* 查找设备 */
-    if (adc_dev == RT_NULL)
+    adc_light_dev = (rt_adc_device_t)rt_device_find(ADC_LIGHT_DEV_NAME);  /* 查找设备 */
+    if (adc_light_dev == RT_NULL)
     {
-        rt_kprintf("adc sample run failed! can't find %s device!\n", ADC_DEV_NAME);
+        rt_kprintf("adc sample run failed! can't find %s device!\n", ADC_LIGHT_DEV_NAME);
         return RT_ERROR;
     }
     else {
-        rt_kprintf("find %s success!\n",ADC_DEV_NAME);
+        rt_kprintf("find %s success!\n",ADC_LIGHT_DEV_NAME);
     }
 
-    rt_adc_enable(adc_dev, ADC_DEV_CHANNEL);/* 使能设备 */
+    rt_adc_enable(adc_light_dev, ADC_LIGHT_DEV_CHANNEL);/* 使能设备 */
     return RT_EOK;
 }
 
@@ -57,20 +60,20 @@ static void my_light_entry(void *param)
     while (1)
     {
         /* 读取采样值 */
-        value = rt_adc_read(adc_dev, ADC_DEV_CHANNEL);
+        light_value = rt_adc_read(adc_light_dev, ADC_LIGHT_DEV_CHANNEL);
         //rt_kprintf("light_entry: the value is :%d \n", value);
 
         /* 转换为对应电压值 */
 //        vol = value * REFER_VOLTAGE / CONVERT_BITS;
         //rt_kprintf("light_entry: the voltage is :%d.%02d \n", vol / 100, vol % 100);
 
-        value = 4000 - value;  // 将采集到的光敏值进行转换，与明暗度一致，越亮光线值越高，越暗光线值越暗
+        light_value = 4000 - light_value;  // 将采集到的光敏值进行转换，与明暗度一致，越亮光线值越高，越暗光线值越暗
         //my_send_Lightdata(value, 0);    //通过TCP发送到服务器
 //        write_light_data(value);        //写入Flash中
-        my_oled_print_light(value);     //显示到OLED上
+        my_oled_print_light(light_value);     //显示到OLED上
 
         // 将光照强度数据写入到设备属性结构体中
-        Set_Devpro_light(value);
+        Set_Devpro_light(light_value);
 
 //        if(light_hard_error_state==0){  //硬件没故障，数据才有效
 //            /* 判断数据是否超出阈值 */
@@ -124,5 +127,67 @@ int my_light_adc(void)
 
 rt_uint32_t my_adc_get_light(void)
 {
-    return value;
+    return light_value;
+}
+
+
+int my_mq2_ADC_Init(void)
+{
+    adc_mq2_dev = (rt_adc_device_t)rt_device_find(ADC_MQ2_DEV_NAME);  /* 查找设备 */
+    if (adc_mq2_dev == RT_NULL)
+    {
+        rt_kprintf("adc sample run failed! can't find %s device!\n", ADC_MQ2_DEV_NAME);
+        return RT_ERROR;
+    }
+    else {
+        rt_kprintf("find %s success!\n",ADC_MQ2_DEV_NAME);
+    }
+
+    rt_adc_enable(adc_mq2_dev, ADC_MQ2_DEV_CHANNEL);/* 使能设备 */
+    return RT_EOK;
+}
+
+//光敏电阻采集数据线程
+static void my_mq2_entry(void *param)
+{
+    while (1)
+    {
+        /* 读取采样值 */
+        mq2_value = rt_adc_read(adc_mq2_dev, ADC_MQ2_DEV_CHANNEL);
+        //rt_kprintf("mq2_entry: the mq2_value is :%d \n", mq2_value);
+
+        my_oled_print_mq2(mq2_value);     //显示到OLED上
+
+        // 将光照强度数据写入到设备属性结构体中
+        Set_Devpro_smoke(mq2_value);
+
+        rt_thread_mdelay(1000);
+    }
+}
+
+int my_mq2_adc(void)
+{
+    if(RT_ERROR==my_mq2_ADC_Init()){   //初始化ADC
+        rt_kprintf("MQ2 ADC INIT Failed!\n");
+        return RT_ERROR;
+    }
+    static rt_thread_t my_mq2_thread = RT_NULL;
+    my_mq2_thread = rt_thread_create("my_mq2_th",    //名称
+                                 my_mq2_entry,   //线程代码
+                                 RT_NULL,         //参数
+                                 THREAD_STACK_SIZE,            //栈大小
+                                 THREAD_PRIORITY,              //优先级
+                                 THREAD_TIMESLICE);             //时间片
+    if (my_mq2_thread != RT_NULL)
+        rt_thread_startup(my_mq2_thread);             //线程进入就绪态
+    else
+    {
+        rt_kprintf("MQ2 Thread create failed!\n");
+    }
+    return RT_EOK;
+}
+
+rt_uint32_t my_adc_get_mq2(void)
+{
+    return mq2_value;
 }

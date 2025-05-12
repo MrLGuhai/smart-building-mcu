@@ -59,8 +59,20 @@ void my_oled_print_light(rt_uint32_t value)
     sprintf(str_data,"light:%dL\n",value);
     //sprintf(str_data,"%s%s",str_data,"%\n");
     //rt_kprintf(str_data);
-    my_clean_line(50);
+//    my_clean_line(50);
     ssd1306_SetCursor(2, 50);
-    ssd1306_WriteString(str_data, Font_7x10, White);
+    ssd1306_WriteString(str_data, Font_6x8, White);
+//    ssd1306_UpdateScreen();
+}
+
+void my_oled_print_mq2(rt_uint32_t value)
+{
+    const char str_data[25]={""};
+    sprintf(str_data,"mq2:%dppm\n",value);
+    //sprintf(str_data,"%s%s",str_data,"%\n");
+    //rt_kprintf(str_data);
+//    my_clean_line(50);
+    ssd1306_SetCursor(70, 50);
+    ssd1306_WriteString(str_data, Font_6x8, White);
     ssd1306_UpdateScreen();
 }

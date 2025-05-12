@@ -22,6 +22,7 @@
 #define BEEP_PIN    GET_PIN(F, 8)
 //#define PWM4_PIN    GET_PIN(D, 12)
 #define Relay_PIN    GET_PIN(D, 4)
+#define MQ2_D0_PIN   GET_PIN(A, 6)
 
 //static uint8_t KEY0_State=0;      //记录KEY0按键的状态
 
@@ -38,6 +39,8 @@ void IQR_HANDALE_KEY0(void *args);;
 
 /* 自己定义KEY1的回调函数，相当于中断服务函数 */
 void IQR_HANDALE_KEY1(void *args);
+
+uint8_t Get_MQ2_D0(void);
 
 void my_GPIO_Init(void);
 

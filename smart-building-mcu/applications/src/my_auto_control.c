@@ -18,6 +18,8 @@ Thresholds_t *thresholds = RT_NULL; // 阈值信息结构体
 
 void my_auto_control_entry(void *parameter)
 {
+    bool mq2_state = false;     // MQ2监测的烟雾浓度是否超出内部阈值
+
     device_status = Get_Device_Properties(); // 使用指针形式，直接获取同一份设备状态结构体
     environmenr = Get_Environment_Properties(); // 使用指针形式，直接获取同一份环境数据结构体
     thresholds = Get_Thresholds_Properties(); // 使用指针形式，直接获取同一份阈值信息结构体
@@ -25,6 +27,8 @@ void my_auto_control_entry(void *parameter)
     while (1)
     {
         // 获取最新的传感器数据和相应的数据阈值
+        mq2_state = Get_MQ2_D0() == PIN_HIGH ? false : true ;       // 未超过设定阈值时，数字接口 DO 口输出高电平
+//        rt_kprintf("MQ2 State is %d\n",mq2_state);
 
         if(device_status->DHT11_Sensor_State){  // 硬件未故障，数据才有效
             // 判断温度数据是否超出阈值
